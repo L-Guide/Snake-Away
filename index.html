@@ -12,12 +12,6 @@
 </head>
 <body>
 <div id="pauseBlocker"></div>
-<div id="platformPauseOverlay">
-  <div class="plat-pause-icon">&#9208;</div>
-  <div class="plat-pause-text">PAUSED</div>
-  <div class="plat-pause-sub">Game is paused</div>
-  <div class="plat-pause-dots"><span></span><span></span><span></span></div>
-</div>
 <canvas id="gc"></canvas>
 
 <div id="scr-home" class="screen">
@@ -167,11 +161,9 @@
     <div class="info-title" style="color:#e53935">Out of Hearts!</div>
     <div id="lose-level" style="color:#7a9ab8">Level 1</div>
     <button class="btn-reward" id="btn-revive" onclick="Game.btnRewatchAd()">
-      <span class="reward-icon">&#127916;</span>
-      <span class="reward-text">Free Revive</span>
-      <span class="reward-sub">+3 Hearts</span>
+      <span>&#127916; Free Revive</span>
     </button>
-    <div class="info-btns" style="flex-direction:column;align-items:center">
+    <div class="info-btns info-btns-col" style="align-items:center">
       <button class="btn btn-primary" onclick="Game.btnRetry()">Try Again</button>
       <button class="btn btn-secondary" onclick="Game.btnHome()">Home</button>
     </div>

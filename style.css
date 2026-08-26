@@ -17,64 +17,6 @@ body.cd-paused #pauseBlocker {
   display: block;
 }
 
-#platformPauseOverlay {
-  display: none;
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 99999;
-  background: radial-gradient(ellipse at center, rgba(0,20,60,0.95) 0%, rgba(0,0,17,0.98) 100%);
-  backdrop-filter: blur(12px);
-  align-items: center; justify-content: center; flex-direction: column;
-  pointer-events: auto; touch-action: none;
-}
-#platformPauseOverlay.active {
-  display: flex;
-}
-.plat-pause-icon {
-  font-size: clamp(40px, 10vw, 64px);
-  margin-bottom: 16px;
-  animation: platPulse 2s ease-in-out infinite;
-  filter: drop-shadow(0 0 25px rgba(0,170,255,0.6));
-}
-@keyframes platPulse {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.08); opacity: 1; }
-}
-.plat-pause-text {
-  font-size: clamp(28px, 8vw, 48px);
-  font-weight: 900; letter-spacing: 6px;
-  background: linear-gradient(135deg, #00aaff, #0066ff, #00ccff);
-  background-size: 200% 200%;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: platTextShift 3s ease infinite;
-  filter: drop-shadow(0 0 20px rgba(0,170,255,0.5)) drop-shadow(0 0 40px rgba(0,100,255,0.3));
-  text-align: center;
-}
-@keyframes platTextShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.plat-pause-sub {
-  font-size: clamp(11px, 3vw, 14px);
-  color: rgba(255,255,255,0.3);
-  margin-top: 12px; letter-spacing: 3px; text-transform: uppercase;
-}
-.plat-pause-dots {
-  display: flex; gap: 8px; margin-top: 24px;
-}
-.plat-pause-dots span {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #00aaff;
-  animation: platDot 1.4s ease-in-out infinite;
-}
-.plat-pause-dots span:nth-child(2) { animation-delay: 0.2s; }
-.plat-pause-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes platDot {
-  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
-  40% { opacity: 1; transform: scale(1.2); }
-}
-
 .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; overflow-y: auto; padding: 16px 0; }
 #scr-play { background: transparent; pointer-events: none; }
 #scr-play .hud, #scr-play .bottom-bar { pointer-events: auto; }
@@ -374,7 +316,10 @@ body.cd-paused #pauseBlocker {
 .star { color: #444; transition: transform 0.3s, color 0.3s; font-size: inherit; display: inline-block; }
 .star.filled { color: #FFD700; text-shadow: 0 0 12px rgba(255,215,0,0.5); }
 .star.filled.pop { animation: rotateIn 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
-.info-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.info-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; }
+.info-btns-col { flex-direction: column; align-items: center; }
+.info-btns-col .btn { width: 100%; max-width: 260px; }
+.info-box > .btn-reward { width: 100%; max-width: 260px; }
 
 /* ===================== SELECT SCREEN ===================== */
 #scr-select { background: rgba(10,22,40,0.97); flex-direction: column; gap: 12px; padding: 12px; animation: fadeIn 0.3s ease-out; }
@@ -425,18 +370,24 @@ body.cd-paused #pauseBlocker {
 /* ===================== REWARDED AD BUTTONS ===================== */
 .btn-reward {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 2px;
-  padding: 14px 32px;
-  border: 2px solid rgba(255,180,50,0.4);
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(40,30,10,0.8), rgba(50,35,10,0.7));
+  justify-content: center;
+  gap: 6px;
+  padding: clamp(10px,3vw,16px) clamp(24px,6vw,48px);
+  border: 2px solid rgba(78,205,196,0.4);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(20,50,60,0.9), rgba(30,60,70,0.8));
   cursor: pointer;
   transition: all 0.3s;
   animation: rewardPulse 2s ease-in-out infinite;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  max-width: 260px;
+  font-size: clamp(14px,4vw,20px);
+  font-weight: 700;
+  color: #5FFCEB;
 }
 .btn-reward::after {
   content: '';
@@ -447,12 +398,12 @@ body.cd-paused #pauseBlocker {
   transform: rotate(45deg) translateX(-100%);
   animation: rewardShine 3s ease-in-out infinite;
 }
-.btn-reward:hover { border-color: rgba(255,180,50,0.6); transform: translateY(-2px); }
+.btn-reward:hover { border-color: rgba(78,205,196,0.6); transform: translateY(-2px); }
 .btn-reward:active { transform: scale(0.97); }
-.btn-reward .reward-icon { font-size: 22px; }
-.btn-reward .reward-text { font-size: clamp(13px,3.5vw,16px); font-weight: 700; color: #FFD54F; }
-.btn-reward .reward-sub { font-size: 11px; color: rgba(255,213,79,0.6); font-weight: 600; }
-@keyframes rewardPulse { 0%,100% { box-shadow: 0 0 12px rgba(255,180,50,0.15), inset 0 0 20px rgba(255,180,50,0.05); } 50% { box-shadow: 0 0 24px rgba(255,180,50,0.3), inset 0 0 30px rgba(255,180,50,0.1); } }
+.btn-reward .reward-icon { font-size: 16px; }
+.btn-reward .reward-text { font-size: clamp(13px,3.5vw,16px); font-weight: 700; color: #FFD54F; line-height: 1; }
+.btn-reward .reward-sub { font-size: 10px; color: rgba(255,213,79,0.6); font-weight: 600; line-height: 1; }
+@keyframes rewardPulse { 0%,100% { box-shadow: 0 0 12px rgba(78,205,196,0.15), inset 0 0 20px rgba(78,205,196,0.05); } 50% { box-shadow: 0 0 24px rgba(78,205,196,0.3), inset 0 0 30px rgba(78,205,196,0.1); } }
 @keyframes rewardShine { 0%,70%,100% { transform: rotate(45deg) translateX(-100%); } 85% { transform: rotate(45deg) translateX(100%); } }
 
 .btn-reward-inline {
@@ -460,10 +411,10 @@ body.cd-paused #pauseBlocker {
   align-items: center;
   gap: 4px;
   padding: clamp(6px,2vw,10px) clamp(10px,3vw,18px);
-  border: 1px solid rgba(255,180,50,0.35);
+  border: 1px solid rgba(78,205,196,0.35);
   border-radius: 12px;
-  background: rgba(40,30,10,0.6);
-  color: #FFD54F;
+  background: rgba(20,40,50,0.6);
+  color: #5FFCEB;
   font-size: clamp(11px,3vw,14px);
   font-weight: 700;
   cursor: pointer;
@@ -471,7 +422,7 @@ body.cd-paused #pauseBlocker {
   white-space: nowrap;
 }
 .btn-reward-inline span { font-size: 1.1em; }
-.btn-reward-inline:hover { background: rgba(50,40,15,0.7); border-color: rgba(255,180,50,0.55); transform: translateY(-1px); }
+.btn-reward-inline:hover { background: rgba(30,50,60,0.7); border-color: rgba(78,205,196,0.55); transform: translateY(-1px); }
 .btn-reward-inline:active { transform: scale(0.96); }
 
 

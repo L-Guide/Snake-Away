@@ -118,6 +118,10 @@ const Game = (function () {
   }
   function startLevel(L) {
     S.currentLevel = L;
+    S.floatTexts = [];
+    S.particles = [];
+    S.exitAnims = [];
+    S.collectFlyAnims = [];
     var tmpl = getLevel(L);
     S.level = {
       W: tmpl.W, H: tmpl.H, wrap: !!tmpl.wrap, par: tmpl.parMoves,
@@ -206,21 +210,19 @@ const Game = (function () {
   function resumeGame() {
     S.paused = false;
     document.body.classList.remove('cd-paused');
-    try { document.getElementById('platformPauseOverlay').classList.remove('active'); } catch (e) {}
     SnakeAudio.resume();
   }
   function platformPause() {
     if (S.paused) return;
     S.paused = true;
     document.body.classList.add('cd-paused');
-    try { document.getElementById('platformPauseOverlay').classList.add('active'); } catch (e) {}
     SnakeAudio.suspend();
   }
   function platformResume() {
     if (!S.paused) return;
     S.paused = false;
     document.body.classList.remove('cd-paused');
-    try { document.getElementById('platformPauseOverlay').classList.remove('active'); } catch (e) {}
+    if (_adShowing) return;
     if (S.state === 'play') {
       show('play');
       SnakeAudio.resume();
@@ -420,7 +422,7 @@ const Game = (function () {
   function onPointer(e) {
     if (S.tutorial) { dismissTutorial(); e.preventDefault(); return; }
     if (e.target && (e.target.closest('.btn') || e.target.closest('.hud-btn') || e.target.closest('.sel-cell'))) return;
-    if (S.state !== 'play' || S.paused) return;
+    if (S.state !== 'play' || S.paused || _adShowing) return;
     e.preventDefault();
     SnakeAudio.ensure();
     var px = e.clientX - S.boardX;
@@ -1584,11 +1586,21 @@ const Game = (function () {
     }
   }
   function btnHome() {
-    S.state = 'home';
-    SnakeAudio.stopMusic();
-    show('home');
-    updateSoundUI();
-    saveProgress();
+    var btn = document.querySelector('#scr-lose .btn-secondary, #scr-win .btn-secondary');
+    if (btn) btn.disabled = true;
+    sdkAd('interstitial').then(function () {
+      if (btn) btn.disabled = false;
+      S.state = 'home';
+      S.floatTexts = [];
+      S.particles = [];
+      S.exitAnims = [];
+      S.collectFlyAnims = [];
+      SnakeAudio.stopMusic();
+      show('home');
+      updateSoundUI();
+      saveProgress();
+    });
+    setTimeout(function () { if (btn) btn.disabled = false; }, 5000);
   }
   function btnLevels() { show('select'); }
   function btnRestart() {
@@ -1597,19 +1609,39 @@ const Game = (function () {
     startLevel(S.currentLevel);
   }
   function btnNext() {
-    winConfettiParticles = [];
-    var c = document.getElementById('win-canvas');
-    if (c) { var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height); }
-    if (S.currentLevel < 500) startLevel(S.currentLevel + 1);
-    else { showCompleteScreen(); }
+    var btn = document.querySelector('#scr-win .btn-primary');
+    if (btn) btn.disabled = true;
+    sdkAd('interstitial').then(function () {
+      if (btn) btn.disabled = false;
+      winConfettiParticles = [];
+      var c = document.getElementById('win-canvas');
+      if (c) { var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height); }
+      if (S.currentLevel < 500) startLevel(S.currentLevel + 1);
+      else { showCompleteScreen(); }
+    });
+    setTimeout(function () { if (btn) btn.disabled = false; }, 5000);
   }
   function btnReplay() {
-    winConfettiParticles = [];
-    var c = document.getElementById('win-canvas');
-    if (c) { var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height); }
-    startLevel(S.currentLevel);
+    var btn = document.querySelector('#scr-win .btn-secondary');
+    if (btn) btn.disabled = true;
+    sdkAd('interstitial').then(function () {
+      if (btn) btn.disabled = false;
+      winConfettiParticles = [];
+      var c = document.getElementById('win-canvas');
+      if (c) { var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height); }
+      startLevel(S.currentLevel);
+    });
+    setTimeout(function () { if (btn) btn.disabled = false; }, 5000);
   }
-  function btnRetry() { startLevel(S.currentLevel); }
+  function btnRetry() {
+    var btn = document.querySelector('#scr-lose .btn-primary');
+    if (btn) btn.disabled = true;
+    sdkAd('interstitial').then(function () {
+      if (btn) btn.disabled = false;
+      startLevel(S.currentLevel);
+    });
+    setTimeout(function () { if (btn) btn.disabled = false; }, 5000);
+  }
   function btnHowto() {
     show('howto');
   }
@@ -1619,24 +1651,59 @@ const Game = (function () {
   function btnUndo() { doUndo(); }
   function btnHint() { doHint(); }
 
+  var _adShowing = false;
+  function sdkAd(type, rewardType) {
+    if (typeof ytgame === 'undefined' || !ytgame || !ytgame.ads) {
+      return type === 'rewarded' ? Promise.resolve(false) : Promise.resolve();
+    }
+    _adShowing = true;
+    if (type === 'interstitial') {
+      return ytgame.ads.requestInterstitialAd().catch(function () {}).finally(function () { _adShowing = false; });
+    }
+    var rid = (rewardType || 'generic') + '-reward-' + Date.now();
+    return ytgame.ads.requestRewardedAd(rid).catch(function () { return false; }).finally(function () { _adShowing = false; });
+  }
+
   var adCooldown = { hint: 0, revive: 0 };
   function btnRewatchAd() {
     var now = Date.now();
     if (now < adCooldown.revive) return;
-    adCooldown.revive = now + 60000;
-    S.hearts = 3;
-    S.state = 'play';
-    S.paused = false;
-    document.body.classList.remove('cd-paused');
-    show('play');
-    updatePlayUI();
-    SnakeAudio.ensure();
+    var btn = document.getElementById('btn-revive');
+    if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
+    sdkAd('revive').then(function (rewarded) {
+      if (rewarded) {
+        adCooldown.revive = Date.now() + 60000;
+        S.hearts = 3;
+        S.state = 'play';
+        S.paused = false;
+        document.body.classList.remove('cd-paused');
+        show('play');
+        updatePlayUI();
+        SnakeAudio.ensure();
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = rewarded ? '\uD83D\uDCF8 +3 Hearts!' : '\uD83D\uDEAB Not Available';
+        setTimeout(function () { btn.textContent = '\uD83D\uDCF8 Free Revive'; }, 2000);
+      }
+    });
   }
   function btnRewatchHint() {
     var now = Date.now();
     if (now < adCooldown.hint) return;
-    adCooldown.hint = now + 45000;
-    if (S.state === 'play' && !S.paused) doHint();
+    var btn = document.getElementById('btn-free-hint');
+    if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
+    sdkAd('hint').then(function (rewarded) {
+      if (rewarded) {
+        adCooldown.hint = Date.now() + 45000;
+        if (S.state === 'play' && !S.paused) doHint();
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = rewarded ? '<span>&#127916;</span> Hint Ready!' : '<span>&#127916;</span> Not Available';
+        setTimeout(function () { btn.innerHTML = '<span>&#127916;</span> Free Hint'; }, 2000);
+      }
+    });
   }
 
   var completeConfetti = [];
@@ -1713,28 +1780,34 @@ const Game = (function () {
     if (completeAnimId) { cancelAnimationFrame(completeAnimId); completeAnimId = 0; }
   }
   function btnPlayAgain() {
-    stopConfetti();
-    S.unlocked = 500;
-    saveProgress();
-    S.currentLevel = 1;
-    S.state = 'home';
-    show('home');
-    updateHomeUI();
+    sdkAd('interstitial').then(function () {
+      stopConfetti();
+      S.unlocked = 500;
+      saveProgress();
+      S.currentLevel = 1;
+      S.state = 'home';
+      show('home');
+      updateHomeUI();
+    });
   }
   function btnLevelsFromComplete() {
-    stopConfetti();
-    S.unlocked = 500;
-    saveProgress();
-    show('select');
-    buildSelectGrid();
+    sdkAd('interstitial').then(function () {
+      stopConfetti();
+      S.unlocked = 500;
+      saveProgress();
+      show('select');
+      buildSelectGrid();
+    });
   }
   function btnHomeFromComplete() {
-    stopConfetti();
-    S.unlocked = 500;
-    saveProgress();
-    S.state = 'home';
-    show('home');
-    updateHomeUI();
+    sdkAd('interstitial').then(function () {
+      stopConfetti();
+      S.unlocked = 500;
+      saveProgress();
+      S.state = 'home';
+      show('home');
+      updateHomeUI();
+    });
   }
 
   function toggleSound() {
