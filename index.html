@@ -11,6 +11,13 @@
 <script src="https://www.youtube.com/game_api/v1" onerror="window.ytgame=null"></script>
 </head>
 <body>
+<div id="pauseBlocker"></div>
+<div id="platformPauseOverlay">
+  <div class="plat-pause-icon">&#9208;</div>
+  <div class="plat-pause-text">PAUSED</div>
+  <div class="plat-pause-sub">Game is paused</div>
+  <div class="plat-pause-dots"><span></span><span></span><span></span></div>
+</div>
 <canvas id="gc"></canvas>
 
 <div id="scr-home" class="screen">
@@ -133,19 +140,6 @@
       <span>&#127916;</span> Free Hint
     </button>
     <button class="hud-btn" onclick="Game.btnHowto()">?</button>
-  </div>
-</div>
-
-<div id="scr-pause" class="screen info-overlay">
-  <div class="info-box">
-    <div class="info-title">&#9208; Paused</div>
-    <div id="pause-level" style="color:#7a9ab8">Level 1</div>
-    <div class="info-btns" style="flex-direction:column;align-items:center">
-      <button class="btn btn-primary" onclick="Game.btnResume()">Resume</button>
-      <button class="btn btn-secondary" onclick="Game.btnHowto()">How to Play</button>
-      <button class="btn btn-secondary" onclick="Game.btnRestart()">Restart</button>
-      <button class="btn btn-secondary" onclick="Game.btnHome()">Home</button>
-    </div>
   </div>
 </div>
 

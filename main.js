@@ -55,8 +55,8 @@ const Game = (function () {
     }
     if (S.ytMode) {
       try {
-        ytgame.system.onPause(function () { pauseGame(); });
-        ytgame.system.onResume(function () { resumeGame(); });
+        ytgame.system.onPause(function () { platformPause(); });
+        ytgame.system.onResume(function () { platformResume(); });
         ytgame.system.onAudioEnabledChange(function (en) { SnakeAudio.setYtGate(en); });
         SnakeAudio.setYtGate(ytgame.system.isAudioEnabled());
       } catch (e) { /* ignore */ }
@@ -83,6 +83,9 @@ const Game = (function () {
         }, 200);
       });
     }
+  }
+  function sdkScore(s) {
+    try { if (S.ytMode && typeof ytgame !== 'undefined' && ytgame.engagement) ytgame.engagement.sendScore({ value: Math.floor(s) }); } catch (e) {}
   }
   function resize() {
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -197,16 +200,34 @@ const Game = (function () {
   function pauseGame() {
     if (S.state !== 'play') return;
     S.paused = true;
+    document.body.classList.add('cd-paused');
     SnakeAudio.suspend();
-    show('pause');
   }
   function resumeGame() {
     S.paused = false;
-    show('play');
+    document.body.classList.remove('cd-paused');
+    try { document.getElementById('platformPauseOverlay').classList.remove('active'); } catch (e) {}
     SnakeAudio.resume();
   }
+  function platformPause() {
+    if (S.paused) return;
+    S.paused = true;
+    document.body.classList.add('cd-paused');
+    try { document.getElementById('platformPauseOverlay').classList.add('active'); } catch (e) {}
+    SnakeAudio.suspend();
+  }
+  function platformResume() {
+    if (!S.paused) return;
+    S.paused = false;
+    document.body.classList.remove('cd-paused');
+    try { document.getElementById('platformPauseOverlay').classList.remove('active'); } catch (e) {}
+    if (S.state === 'play') {
+      show('play');
+      SnakeAudio.resume();
+    }
+  }
   function show(id) {
-    var screens = ['home', 'select', 'play', 'pause', 'win', 'lose', 'howto', 'complete'];
+    var screens = ['home', 'select', 'play', 'win', 'lose', 'howto', 'complete'];
     screens.forEach(function (s) {
       var el = document.getElementById('scr-' + s);
       if (el) el.style.display = (s === id) ? 'flex' : 'none';
@@ -215,7 +236,6 @@ const Game = (function () {
     if (id === 'select') buildSelectGrid();
     if (id === 'win') updateWinUI();
     if (id === 'lose') updateLoseUI();
-    if (id === 'pause') updatePauseUI();
     if (id === 'play') updatePlayUI();
   }
   function updateHomeUI() {
@@ -292,6 +312,7 @@ const Game = (function () {
     if (sc > prev) S.stars[S.currentLevel] = sc;
     if (S.currentLevel >= S.unlocked) S.unlocked = Math.min(500, S.currentLevel + 1);
     saveProgress();
+    sdkScore(S.totalScore);
     var el;
     el = document.getElementById('win-level');
     if (el) {
@@ -365,10 +386,6 @@ const Game = (function () {
     var el = document.getElementById('lose-level');
     if (el) el.textContent = 'Level ' + S.currentLevel;
   }
-  function updatePauseUI() {
-    var el = document.getElementById('pause-level');
-    if (el) el.textContent = 'Level ' + S.currentLevel;
-  }
   function buildSelectGrid() {
     var grid = document.getElementById('select-grid');
     if (!grid) return;
@@ -418,10 +435,6 @@ const Game = (function () {
     tryRemove(snake);
   }
   function onKey(e) {
-    if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') {
-      if (S.state === 'play' && !S.paused) { pauseGame(); if (e.key !== 'Escape') e.preventDefault(); }
-      else if (S.paused) { resumeGame(); if (e.key !== 'Escape') e.preventDefault(); }
-    }
     if (e.key === 'g' || e.key === 'G') {
       if (S.state === 'home') {
         var savedUnlocked = S.unlocked;
@@ -1472,7 +1485,7 @@ const Game = (function () {
     var lineH = msgFontSize * 1.5;
     var boxH = 46 + lines.length * lineH + 42;
     var boxX = (w - boxW) / 2;
-    var boxY = 34;
+    var boxY = Math.max(40, Math.floor((S.boardY - boxH) / 2));
     c.fillStyle = 'rgba(0,0,0,0.68)';
     c.fillRect(0, 0, w, h);
     c.fillStyle = 'rgba(20,35,60,0.97)';
@@ -1578,9 +1591,9 @@ const Game = (function () {
     saveProgress();
   }
   function btnLevels() { show('select'); }
-  function btnResume() { resumeGame(); }
   function btnRestart() {
     S.paused = false;
+    document.body.classList.remove('cd-paused');
     startLevel(S.currentLevel);
   }
   function btnNext() {
@@ -1598,13 +1611,10 @@ const Game = (function () {
   }
   function btnRetry() { startLevel(S.currentLevel); }
   function btnHowto() {
-    if (S.state === 'play' && !S.paused) pauseGame();
     show('howto');
   }
   function btnHowtoBack() {
-    if (S.paused && S.state === 'play') { show('play'); resumeGame(); }
-    else if (S.paused) { show('play'); resumeGame(); }
-    else show('home');
+    show('home');
   }
   function btnUndo() { doUndo(); }
   function btnHint() { doHint(); }
@@ -1617,6 +1627,7 @@ const Game = (function () {
     S.hearts = 3;
     S.state = 'play';
     S.paused = false;
+    document.body.classList.remove('cd-paused');
     show('play');
     updatePlayUI();
     SnakeAudio.ensure();
@@ -1746,7 +1757,7 @@ const Game = (function () {
   return {
     init: init,
     btnHome: btnHome, btnLevels: btnLevels,
-    btnResume: btnResume, btnRestart: btnRestart,
+    btnRestart: btnRestart,
     btnNext: btnNext, btnReplay: btnReplay, btnRetry: btnRetry,
     btnHowto: btnHowto, btnHowtoBack: btnHowtoBack,
     btnUndo: btnUndo, btnHint: btnHint,

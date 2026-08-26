@@ -2,6 +2,79 @@
 html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a1628; color: #e0e8f0; touch-action: none; user-select: none; -webkit-user-select: none; }
 canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
 
+body.cd-paused canvas,
+body.cd-paused .bottom-bar,
+body.cd-paused .hud {
+  pointer-events: none !important;
+}
+#pauseBlocker {
+  display: none;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 9998; background: transparent;
+  touch-action: none; pointer-events: none;
+}
+body.cd-paused #pauseBlocker {
+  display: block;
+}
+
+#platformPauseOverlay {
+  display: none;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 99999;
+  background: radial-gradient(ellipse at center, rgba(0,20,60,0.95) 0%, rgba(0,0,17,0.98) 100%);
+  backdrop-filter: blur(12px);
+  align-items: center; justify-content: center; flex-direction: column;
+  pointer-events: auto; touch-action: none;
+}
+#platformPauseOverlay.active {
+  display: flex;
+}
+.plat-pause-icon {
+  font-size: clamp(40px, 10vw, 64px);
+  margin-bottom: 16px;
+  animation: platPulse 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 25px rgba(0,170,255,0.6));
+}
+@keyframes platPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+.plat-pause-text {
+  font-size: clamp(28px, 8vw, 48px);
+  font-weight: 900; letter-spacing: 6px;
+  background: linear-gradient(135deg, #00aaff, #0066ff, #00ccff);
+  background-size: 200% 200%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: platTextShift 3s ease infinite;
+  filter: drop-shadow(0 0 20px rgba(0,170,255,0.5)) drop-shadow(0 0 40px rgba(0,100,255,0.3));
+  text-align: center;
+}
+@keyframes platTextShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.plat-pause-sub {
+  font-size: clamp(11px, 3vw, 14px);
+  color: rgba(255,255,255,0.3);
+  margin-top: 12px; letter-spacing: 3px; text-transform: uppercase;
+}
+.plat-pause-dots {
+  display: flex; gap: 8px; margin-top: 24px;
+}
+.plat-pause-dots span {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #00aaff;
+  animation: platDot 1.4s ease-in-out infinite;
+}
+.plat-pause-dots span:nth-child(2) { animation-delay: 0.2s; }
+.plat-pause-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes platDot {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1.2); }
+}
+
 .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; overflow-y: auto; padding: 16px 0; }
 #scr-play { background: transparent; pointer-events: none; }
 #scr-play .hud, #scr-play .bottom-bar { pointer-events: auto; }
