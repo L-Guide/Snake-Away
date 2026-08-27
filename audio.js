@@ -207,7 +207,7 @@ const SnakeAudio = (function () {
   }
   function startMusic() {
     if (musicPlaying) return;
-    if (!musicOn || !enabled || !ytAudioGate) return;
+    if (!musicOn || !ytAudioGate) return;
     if (ctx && ctx.state === 'suspended') ctx.resume();
     musicPlaying = true;
     musicStep = 0;
@@ -224,7 +224,7 @@ const SnakeAudio = (function () {
   }
   function resume() {
     if (ctx && ctx.state === 'suspended') ctx.resume();
-    if (musicOn && enabled && ytAudioGate) startMusic();
+    if (musicOn && ytAudioGate) startMusic();
   }
   function setEnabled(v) { enabled = v; applyVol(); }
   function setMusic(v) { musicOn = v; applyVol(); }
@@ -236,9 +236,9 @@ const SnakeAudio = (function () {
   function applyVol() {
     if (!ctx) return;
     sfxGain.gain.value = enabled && ytAudioGate ? 0.35 : 0;
-    musGain.gain.value = musicOn && enabled && ytAudioGate ? 0.12 : 0;
-    if (musicOn && enabled && ytAudioGate && !musicPlaying) startMusic();
-    if ((!musicOn || !enabled || !ytAudioGate) && musicPlaying) stopMusic();
+    musGain.gain.value = musicOn && ytAudioGate ? 0.12 : 0;
+    if (musicOn && ytAudioGate && !musicPlaying) startMusic();
+    if ((!musicOn || !ytAudioGate) && musicPlaying) stopMusic();
   }
   function init() { ensure(); }
   return {
