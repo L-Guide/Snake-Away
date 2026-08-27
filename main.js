@@ -1664,15 +1664,12 @@ const Game = (function () {
     return ytgame.ads.requestRewardedAd(rid).catch(function () { return false; }).finally(function () { _adShowing = false; });
   }
 
-  var adCooldown = { hint: 0, revive: 0 };
   function btnRewatchAd() {
-    var now = Date.now();
-    if (now < adCooldown.revive) return;
+    if (_adShowing) return;
     var btn = document.getElementById('btn-revive');
     if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
     sdkAd('revive').then(function (rewarded) {
       if (rewarded) {
-        adCooldown.revive = Date.now() + 60000;
         S.hearts = 3;
         S.state = 'play';
         S.paused = false;
@@ -1689,13 +1686,11 @@ const Game = (function () {
     });
   }
   function btnRewatchHint() {
-    var now = Date.now();
-    if (now < adCooldown.hint) return;
+    if (_adShowing) return;
     var btn = document.getElementById('btn-free-hint');
     if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
     sdkAd('hint').then(function (rewarded) {
       if (rewarded) {
-        adCooldown.hint = Date.now() + 45000;
         if (S.state === 'play' && !S.paused) doHint();
       }
       if (btn) {
