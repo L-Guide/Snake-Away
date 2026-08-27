@@ -210,24 +210,21 @@ const Game = (function () {
   function resumeGame() {
     S.paused = false;
     document.body.classList.remove('cd-paused');
-    SnakeAudio.resume();
+    if (!_adShowing) SnakeAudio.resume();
   }
   function platformPause() {
     if (S.paused) return;
     S.paused = true;
     document.body.classList.add('cd-paused');
     saveProgress();
-    SnakeAudio.suspend();
+    if (!_adShowing) SnakeAudio.suspend();
   }
   function platformResume() {
     if (!S.paused) return;
     S.paused = false;
     document.body.classList.remove('cd-paused');
     if (_adShowing) return;
-    if (S.state === 'play') {
-      show('play');
-      SnakeAudio.resume();
-    }
+    SnakeAudio.resume();
   }
   function show(id) {
     var screens = ['home', 'select', 'play', 'win', 'lose', 'howto', 'complete'];
