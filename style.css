@@ -508,3 +508,9 @@ body.cd-paused #pauseBlocker {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(78,205,196,0.3); border-radius: 2px; }
+
+/* ===================== MOBILE PORTRAIT ===================== */
+@media (orientation: portrait) {
+  .hud { top: clamp(14px,4vw,22px); padding-top: clamp(12px,3.5vw,18px); }
+  .hud-center { gap: 5px; }
+}

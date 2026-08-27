@@ -1539,7 +1539,8 @@ const Game = (function () {
     var lineH = msgFontSize * 1.5;
     var boxH = 46 + lines.length * lineH + 42;
     var boxX = (w - boxW) / 2;
-    var boxY = Math.max(40, Math.floor((S.boardY - boxH) / 2));
+    var minY = Math.max(80, S.screenH * 0.1);
+    var boxY = Math.max(minY, Math.floor((S.boardY - boxH) / 2));
     c.fillStyle = 'rgba(0,0,0,0.68)';
     c.fillRect(0, 0, w, h);
     c.fillStyle = 'rgba(20,35,60,0.97)';
