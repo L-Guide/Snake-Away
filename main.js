@@ -483,15 +483,6 @@ const Game = (function () {
     tryRemove(snake);
   }
   function onKey(e) {
-    if (e.key === 'g' || e.key === 'G') {
-      if (S.state === 'home') {
-        var savedUnlocked = S.unlocked;
-        showCompleteScreen();
-        S.unlocked = savedUnlocked;
-        saveProgress();
-        e.preventDefault();
-      }
-    }
   }
   function tryRemove(snake) {
     S.hintSnake = null;
@@ -1887,10 +1878,7 @@ const Game = (function () {
       stopConfetti();
       S.unlocked = 500;
       saveProgress();
-      S.currentLevel = 1;
-      S.state = 'home';
-      show('home');
-      updateHomeUI();
+      startLevel(1);
     });
   }
   function btnLevelsFromComplete() {
