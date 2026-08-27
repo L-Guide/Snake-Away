@@ -1653,16 +1653,25 @@ const Game = (function () {
   function btnHint() { doHint(); }
 
   var _adShowing = false;
+  var _musicBeforeAd = false;
   function sdkAd(type, rewardType) {
     if (typeof ytgame === 'undefined' || !ytgame || !ytgame.ads) {
       return type === 'rewarded' ? Promise.resolve(false) : Promise.resolve();
     }
     _adShowing = true;
+    _musicBeforeAd = SnakeAudio.musicOn && SnakeAudio.enabled;
+    SnakeAudio.stopMusic();
     if (type === 'interstitial') {
-      return ytgame.ads.requestInterstitialAd().catch(function () {}).finally(function () { _adShowing = false; });
+      return ytgame.ads.requestInterstitialAd().catch(function () {}).finally(function () {
+        _adShowing = false;
+        if (_musicBeforeAd && S.state === 'play') SnakeAudio.startMusic();
+      });
     }
     var rid = (rewardType || 'generic') + '-reward-' + Date.now();
-    return ytgame.ads.requestRewardedAd(rid).catch(function () { return false; }).finally(function () { _adShowing = false; });
+    return ytgame.ads.requestRewardedAd(rid).catch(function () { return false; }).finally(function () {
+      _adShowing = false;
+      if (_musicBeforeAd && S.state === 'play') SnakeAudio.startMusic();
+    });
   }
 
   function btnRewatchAd() {
