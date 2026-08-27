@@ -417,7 +417,22 @@ const Game = (function () {
     var el = document.getElementById('lose-level');
     if (el) el.textContent = 'Level ' + S.currentLevel;
     var title = document.querySelector('#scr-lose .info-title');
-    if (title) title.textContent = S._loseReason === 'time' ? "Time's Up!" : 'Out of Hearts!';
+    var btnRevive = document.getElementById('btn-revive');
+    var btnGetTime = document.getElementById('btn-get-time');
+    var btnTimeText = document.getElementById('btn-get-time-text');
+    if (S._loseReason === 'time') {
+      if (title) title.textContent = "Time's Up!";
+      if (btnRevive) btnRevive.style.display = 'none';
+      if (btnGetTime) { btnGetTime.style.display = ''; }
+      var bonus = Math.round(S.timerTotal * 0.3);
+      if (bonus < 10) bonus = 10;
+      S._timeBonus = bonus;
+      if (btnTimeText) btnTimeText.textContent = '⏱ Get +' + bonus + 's';
+    } else {
+      if (title) title.textContent = 'Out of Hearts!';
+      if (btnRevive) btnRevive.style.display = '';
+      if (btnGetTime) btnGetTime.style.display = 'none';
+    }
   }
   function buildSelectGrid() {
     var grid = document.getElementById('select-grid');
@@ -1540,7 +1555,8 @@ const Game = (function () {
     var boxH = 46 + lines.length * lineH + 42;
     var boxX = (w - boxW) / 2;
     var minY = Math.max(80, S.screenH * 0.1);
-    var boxY = Math.max(minY, Math.floor((S.boardY - boxH) / 2));
+    var boxY = Math.floor((S.screenH - boxH) / 2);
+    if (boxY < minY) boxY = minY;
     c.fillStyle = 'rgba(0,0,0,0.68)';
     c.fillRect(0, 0, w, h);
     c.fillStyle = 'rgba(20,35,60,0.97)';
@@ -1696,6 +1712,32 @@ const Game = (function () {
       startLevel(S.currentLevel);
     });
     setTimeout(function () { if (btn) btn.disabled = false; }, 5000);
+  }
+  function btnGetTime() {
+    if (_adShowing) return;
+    var btn = document.getElementById('btn-get-time');
+    var btnTimeText = document.getElementById('btn-get-time-text');
+    if (btn) { btn.disabled = true; if (btnTimeText) btnTimeText.textContent = 'Loading...'; }
+    sdkAd('time', 'time').then(function (rewarded) {
+      if (btn) { btn.disabled = false; }
+      if (rewarded) {
+        var bonus = S._timeBonus || 10;
+        S.timerLeft += bonus;
+        S.timerOn = true;
+        S.hearts = 3;
+        S._loseReason = '';
+        S.state = 'play';
+        show('play');
+        updateTimerUI();
+        updatePlayUI();
+        SnakeAudio.resume();
+      } else {
+        if (btnTimeText) btnTimeText.textContent = '⏱ Get +' + (S._timeBonus || 10) + 's';
+      }
+    });
+    setTimeout(function () {
+      if (btn) { btn.disabled = false; if (btnTimeText) btnTimeText.textContent = '⏱ Get +' + (S._timeBonus || 10) + 's'; }
+    }, 5000);
   }
   var _howtoFrom = 'home';
   function btnHowto() {
@@ -1895,7 +1937,7 @@ const Game = (function () {
     btnNext: btnNext, btnReplay: btnReplay, btnRetry: btnRetry,
     btnHowto: btnHowto, btnHowtoBack: btnHowtoBack,
     btnUndo: btnUndo, btnHint: btnHint,
-    btnRewatchAd: btnRewatchAd, btnRewatchHint: btnRewatchHint,
+    btnRewatchAd: btnRewatchAd, btnRewatchHint: btnRewatchHint, btnGetTime: btnGetTime,
     btnPlayAgain: btnPlayAgain, btnLevelsFromComplete: btnLevelsFromComplete, btnHomeFromComplete: btnHomeFromComplete,
     toggleSound: toggleSound, toggleMusic: toggleMusic,
   };
