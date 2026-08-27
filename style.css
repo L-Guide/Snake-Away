@@ -4,7 +4,8 @@ canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
 
 body.cd-paused canvas,
 body.cd-paused .bottom-bar,
-body.cd-paused .hud {
+body.cd-paused .hud,
+body.cd-paused .screen {
   pointer-events: none !important;
 }
 #pauseBlocker {

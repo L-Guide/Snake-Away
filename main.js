@@ -202,9 +202,9 @@ const Game = (function () {
     if (S.floatTexts.length > 8) S.floatTexts.shift();
   }
   function pauseGame() {
-    if (S.state !== 'play') return;
     S.paused = true;
     document.body.classList.add('cd-paused');
+    saveProgress();
     SnakeAudio.suspend();
   }
   function resumeGame() {
@@ -216,6 +216,7 @@ const Game = (function () {
     if (S.paused) return;
     S.paused = true;
     document.body.classList.add('cd-paused');
+    saveProgress();
     SnakeAudio.suspend();
   }
   function platformResume() {
