@@ -98,12 +98,14 @@ const Game = (function () {
     if (S.state === 'play' && S.level) computeBoard();
   }
   function computeBoard() {
-    var topReserve = Math.max(70, S.screenH * 0.09);
+    var landscape = S.screenW > S.screenH;
+    var topReserve = landscape ? Math.max(80, S.screenH * 0.12) : Math.max(70, S.screenH * 0.09);
     var bottomReserve = Math.max(84, S.screenH * 0.11);
     var availW = S.screenW - PAD * 2;
     var availH = S.screenH - topReserve - bottomReserve;
+    var maxCs = landscape ? 50 : 64;
     var cs = Math.floor(Math.min(availW / S.level.W, availH / S.level.H));
-    S.cellSize = Math.max(14, Math.min(64, cs));
+    S.cellSize = Math.max(14, Math.min(maxCs, cs));
     var bw = S.cellSize * S.level.W;
     var bh = S.cellSize * S.level.H;
     S.boardX = Math.floor((S.screenW - bw) / 2);
@@ -166,8 +168,8 @@ const Game = (function () {
       if (snakes[si].lockKey) lockCount++;
     }
     var cells = S.level.W * S.level.H;
-    var secs = Math.round(snakes.length * 1.8 + iceCount * 1.5 + lockCount * 2 + cells * 0.05 + 3);
-    secs = Math.max(15, Math.min(150, secs));
+    var secs = Math.round(snakes.length * 1 + iceCount * 0.8 + lockCount * 1.2 + cells * 0.02 + 2);
+    secs = Math.max(8, Math.min(80, secs));
     S.timerTotal = secs;
     S.timerLeft = secs;
     S.timerOn = true;
