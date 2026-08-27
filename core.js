@@ -66,12 +66,9 @@ var SnakeCore = (function () {
   function mechFor(L) {
     if (L <= 4) return { ice: false, stone: false, dbl: false, gold: false, wrap: false, lshape: false, chain: false };
     if (L <= 9) return { ice: true, stone: false, dbl: false, gold: false, wrap: false, lshape: false, chain: false };
-    if (L <= 14) return { ice: true, stone: true, dbl: false, gold: false, wrap: false, lshape: false, chain: false };
-    if (L <= 19) return { ice: true, stone: true, dbl: true, gold: false, wrap: false, lshape: false, chain: false };
-    if (L <= 24) return { ice: true, stone: true, dbl: true, gold: true, wrap: false, lshape: false, chain: false };
-    if (L <= 29) return { ice: true, stone: true, dbl: true, gold: true, wrap: true, lshape: false, chain: false };
-    if (L <= 34) return { ice: true, stone: true, dbl: true, gold: true, wrap: true, lshape: true, chain: false };
-    return { ice: true, stone: true, dbl: true, gold: true, wrap: true, lshape: true, chain: true };
+    if (L <= 19) return { ice: true, stone: false, dbl: false, gold: true, wrap: false, lshape: false, chain: false };
+    if (L <= 34) return { ice: true, stone: false, dbl: false, gold: true, wrap: false, lshape: false, chain: false };
+    return { ice: true, stone: false, dbl: false, gold: true, wrap: false, lshape: false, chain: true };
   }
 
   function getWorld(L) { return WORLDS[((L - 1) / 10 | 0) % WORLDS.length]; }

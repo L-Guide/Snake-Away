@@ -30,11 +30,7 @@ const Game = (function () {
     { level: 1, key: 'basic', title: '👉 Tap to Free!', msg: 'Tap the glowing snake to slide it off the board. Clear every snake to win the level!' },
     { level: 3, key: 'collect', title: '🎁 Treasure Boxes', msg: 'Some levels hide a treasure box! Clear a snake right next to it to break it open and collect the prize inside.' },
     { level: 5, key: 'ice', title: '🧊 Icy Snakes', msg: 'Frosted snakes need 2 taps: first tap cracks the ice, second tap sends it off (only if the path is clear).' },
-    { level: 10, key: 'stone', title: '🪨 Stone Blocks', msg: 'Grey stones never move. A snake can only exit if no stone or snake blocks its path.' },
-    { level: 15, key: 'dbl', title: '↔️ Double Snakes', msg: 'Snakes with arrows on both ends can exit from either side — whichever direction is clear.' },
     { level: 20, key: 'gold', title: '✨ Golden Snakes', msg: 'Golden snakes shimmer for style — same rules apply, just extra satisfying to clear!' },
-    { level: 25, key: 'wrap', title: '🔁 Wrap Around', msg: 'On this board, the edges loop! A snake can exit one side and reappear on the other.' },
-    { level: 30, key: 'lshape', title: '📐 Bent Snakes', msg: 'Some snakes bend in an L-shape. They still only exit in the direction their head arrow points.' },
     { level: 35, key: 'chain', title: '🔒 Locked Snakes', msg: 'A locked snake (chain icon) can\'t be freed until the snake holding its key is cleared first.' },
   ];
   function init() {
@@ -1604,7 +1600,9 @@ const Game = (function () {
   function btnRestart() {
     S.paused = false;
     document.body.classList.remove('cd-paused');
-    startLevel(S.currentLevel);
+    sdkAd('restart', 'restart').then(function () {
+      startLevel(S.currentLevel);
+    });
   }
   function btnNext() {
     var btn = document.querySelector('#scr-win .btn-primary');
@@ -1640,11 +1638,13 @@ const Game = (function () {
     });
     setTimeout(function () { if (btn) btn.disabled = false; }, 5000);
   }
+  var _howtoFrom = 'home';
   function btnHowto() {
+    _howtoFrom = (S.state === 'play') ? 'play' : 'home';
     show('howto');
   }
   function btnHowtoBack() {
-    show('home');
+    show(_howtoFrom);
   }
   function btnUndo() { doUndo(); }
   function btnHint() { doHint(); }

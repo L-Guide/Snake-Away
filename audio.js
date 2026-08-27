@@ -165,7 +165,7 @@ const SnakeAudio = (function () {
     playTone('sine', 1000, 0.04, 0.2);
   }
   function playNote(name, type, vol, dur, t) {
-    if (!canPlay()) return;
+    if (!musicOn || !ytAudioGate) return;
     ensure();
     const o = ctx.createOscillator();
     const g = ctx.createGain();
@@ -178,7 +178,7 @@ const SnakeAudio = (function () {
     o.start(t); o.stop(t + dur + 0.01);
   }
   function scheduleMusic() {
-    if (!musicPlaying || !canPlay()) return;
+    if (!musicPlaying || !musicOn || !ytAudioGate) return;
     ensure();
     const step = musicStep % 16;
     const chordIdx = Math.floor(step / 4);
@@ -208,6 +208,7 @@ const SnakeAudio = (function () {
   function startMusic() {
     if (musicPlaying) return;
     if (!musicOn || !ytAudioGate) return;
+    ensure();
     if (ctx && ctx.state === 'suspended') ctx.resume();
     musicPlaying = true;
     musicStep = 0;
@@ -223,7 +224,7 @@ const SnakeAudio = (function () {
     stopMusic();
   }
   function resume() {
-    if (ctx && ctx.state === 'suspended') ctx.resume();
+    ensure();
     if (musicOn && ytAudioGate) startMusic();
   }
   function setEnabled(v) { enabled = v; applyVol(); }
@@ -234,7 +235,7 @@ const SnakeAudio = (function () {
     applyVol();
   }
   function applyVol() {
-    if (!ctx) return;
+    ensure();
     sfxGain.gain.value = enabled && ytAudioGate ? 0.35 : 0;
     musGain.gain.value = musicOn && ytAudioGate ? 0.12 : 0;
     if (musicOn && ytAudioGate && !musicPlaying) startMusic();

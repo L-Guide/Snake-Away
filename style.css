@@ -21,7 +21,7 @@ body.cd-paused #pauseBlocker {
 .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; overflow-y: auto; padding: 16px 0; }
 #scr-play { background: transparent; pointer-events: none; }
 #scr-play .hud, #scr-play .bottom-bar { pointer-events: auto; }
-#scr-home { background: radial-gradient(ellipse at 50% 25%, rgba(30,60,100,0.5) 0%, rgba(10,22,40,0.98) 65%); animation: fadeIn 0.5s ease-out; }
+#scr-home { background: radial-gradient(ellipse at 50% 25%, rgba(15,30,55,0.98) 0%, rgba(10,22,40,0.98) 65%); animation: fadeIn 0.5s ease-out; }
 
 /* ===================== HOME BACKGROUND ORBS ===================== */
 .home-bg-orbs { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0; }
@@ -291,7 +291,7 @@ body.cd-paused #pauseBlocker {
 .btn-icon { width: clamp(36px,10vw,48px); height: clamp(36px,10vw,48px); padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: clamp(16px,5vw,24px); }
 
 /* ===================== HUD ===================== */
-.hud { position: absolute; top: 0; left: 0; width: 100%; padding: clamp(8px,2vw,14px) clamp(12px,3vw,20px); display: flex; align-items: center; justify-content: space-between; z-index: 20; }
+.hud { position: absolute; top: clamp(8px,3vw,16px); left: 0; width: 100%; padding: clamp(8px,2vw,14px) clamp(12px,3vw,20px); display: flex; align-items: center; justify-content: space-between; z-index: 20; }
 .hud-left, .hud-center, .hud-right { display: flex; align-items: center; gap: 8px; }
 .hud-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .hud-collect { font-size: clamp(12px,3vw,15px); font-weight: 700; background: rgba(20,35,60,0.85); padding: 3px 12px; border-radius: 14px; border: 1px solid rgba(255,215,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; gap: 5px; transition: all 0.3s; }
@@ -494,7 +494,7 @@ body.cd-paused #pauseBlocker {
 .win-collect-summary .wc-item .wc-emoji { font-size: 16px; }
 .win-collect-summary .wc-item .wc-count { color: #4ECDC4; }
 .win-btn-next { min-width: 120px; animation: subtitleSlide 0.4s ease-out 0.8s both; }
-.win-btn-replay { animation: subtitleSlide 0.4s ease-out 0.9s both; }
+.win-btn-replay { min-width: 120px; animation: subtitleSlide 0.4s ease-out 0.9s both; }
 
 /* ===================== SCROLLBAR ===================== */
 ::-webkit-scrollbar { width: 4px; }
