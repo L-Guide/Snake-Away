@@ -241,10 +241,24 @@ const SnakeAudio = (function () {
     if (musicOn && ytAudioGate && !musicPlaying) startMusic();
     if ((!musicOn || !ytAudioGate) && musicPlaying) stopMusic();
   }
+  function tick() {
+    if (!canPlay()) return;
+    ensure();
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(880, t);
+    o.frequency.exponentialRampToValueAtTime(660, t + 0.08);
+    g.gain.setValueAtTime(0.2, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+    o.connect(g); g.connect(sfxGain);
+    o.start(t); o.stop(t + 0.12);
+  }
   function init() { ensure(); }
   return {
     init, ensure, suspend, resume,
-    tap, slide, err, win, star, click, pop, crack, unlock,
+    tap, slide, err, win, star, click, pop, crack, unlock, tick,
     startMusic, stopMusic,
     setEnabled, setMusic, setYtGate,
     get enabled() { return enabled; },

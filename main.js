@@ -11,6 +11,7 @@ const Game = (function () {
     exitAnims: [], particles: [],
     shakeT: 0, shakeA: 0, redFlash: 0,
     time: 0, dt: 0, lastTime: 0,
+    timerTotal: 0, timerLeft: 0, timerOn: false,
     currentLevel: 1, unlocked: 1, stars: {},
     cache: {}, paused: false,
     ytMode: false, firstFrameSent: false,
@@ -139,6 +140,7 @@ const Game = (function () {
     S.mistakes = 0;
     S.hearts = 3;
     S.moves = 0;
+    S._loseReason = '';
     S.levelScore = 0;
     S.collected = 0;
     S.collectedTypes = {};
@@ -157,6 +159,19 @@ const Game = (function () {
     S.collectFlyAnims = [];
     S.world = SnakeCore.getWorld(L);
     computeBoard();
+    var snakes = S.level.snakes;
+    var iceCount = 0, lockCount = 0;
+    for (var si = 0; si < snakes.length; si++) {
+      if (snakes[si].hp > 1) iceCount++;
+      if (snakes[si].lockKey) lockCount++;
+    }
+    var cells = S.level.W * S.level.H;
+    var secs = Math.round(snakes.length * 1.8 + iceCount * 1.5 + lockCount * 2 + cells * 0.05 + 3);
+    secs = Math.max(15, Math.min(150, secs));
+    S.timerTotal = secs;
+    S.timerLeft = secs;
+    S.timerOn = true;
+    updateTimerUI();
     S.state = 'play';
     show('play');
     SnakeAudio.init();
@@ -302,6 +317,24 @@ const Game = (function () {
       collectEl.style.display = 'none';
     }
   }
+  function updateTimerUI() {
+    var fill = document.getElementById('hud-timer-fill');
+    var txt = document.getElementById('hud-timer-text');
+    var bar = document.getElementById('hud-timer-bar');
+    if (!txt || !fill || !bar) return;
+    var t = Math.max(0, Math.ceil(S.timerLeft));
+    var m = Math.floor(t / 60);
+    var s = t % 60;
+    txt.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    var pct = S.timerTotal > 0 ? (S.timerLeft / S.timerTotal) * 100 : 0;
+    fill.style.width = pct + '%';
+    bar.classList.remove('timer-warn', 'timer-danger');
+    fill.classList.remove('timer-warn', 'timer-danger');
+    if (S.timerOn) {
+      if (S.timerLeft <= 10) { bar.classList.add('timer-danger'); fill.classList.add('timer-danger'); }
+      else if (S.timerLeft <= 20) { bar.classList.add('timer-warn'); fill.classList.add('timer-warn'); }
+    }
+  }
   function updateWinUI() {
     var sc = SnakeCore.calcStars(S.mistakes);
     var prev = S.stars[S.currentLevel] || 0;
@@ -381,6 +414,8 @@ const Game = (function () {
   function updateLoseUI() {
     var el = document.getElementById('lose-level');
     if (el) el.textContent = 'Level ' + S.currentLevel;
+    var title = document.querySelector('#scr-lose .info-title');
+    if (title) title.textContent = S._loseReason === 'time' ? "Time's Up!" : 'Out of Hearts!';
   }
   function buildSelectGrid() {
     var grid = document.getElementById('select-grid');
@@ -458,6 +493,7 @@ const Game = (function () {
           addFloatText('LOCKED!', fx, fy, '#FFD54F');
           updatePlayUI();
           if (S.hearts <= 0) {
+            S._loseReason = 'hearts';
             S.state = 'lost';
             S.winTime = 0;
             SnakeAudio.err();
@@ -565,6 +601,7 @@ const Game = (function () {
       }
       updatePlayUI();
       if (S.hearts <= 0) {
+        S._loseReason = 'hearts';
         S.state = 'lost';
         setTimeout(function () { if (S.state === 'lost') show('lose'); }, 600);
       }
@@ -760,6 +797,25 @@ const Game = (function () {
   }
   function update(dt) {
     if (S.state === 'play' && !S.paused) {
+      if (S.timerOn && !S.tutorial) {
+        var prevT = Math.ceil(S.timerLeft);
+        S.timerLeft -= dt;
+        var curT = Math.ceil(S.timerLeft);
+        if (curT !== prevT && curT <= 10 && curT > 0) SnakeAudio.tick();
+        updateTimerUI();
+        if (S.timerLeft <= 0) {
+          S.timerLeft = 0;
+          S.timerOn = false;
+          S.hearts = 0;
+          S.state = 'lost';
+          S.winTime = 0;
+          S._loseReason = 'time';
+          SnakeAudio.err();
+          addFloatText("Time's Up!", S.screenW / 2, S.screenH * 0.35, '#e53935');
+          updatePlayUI();
+          setTimeout(function () { if (S.state === 'lost') show('lose'); }, 600);
+        }
+      }
       S.tutorialTime += dt;
       if (S.handVisible && S.tutorial) {
         var dx = S.handTargetX - S.handX;

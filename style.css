@@ -293,7 +293,7 @@ body.cd-paused #pauseBlocker {
 /* ===================== HUD ===================== */
 .hud { position: absolute; top: clamp(8px,3vw,16px); left: 0; width: 100%; padding: clamp(8px,2vw,14px) clamp(12px,3vw,20px); display: flex; align-items: center; justify-content: space-between; z-index: 20; }
 .hud-left, .hud-center, .hud-right { display: flex; align-items: center; gap: 8px; }
-.hud-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.hud-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .hud-collect { font-size: clamp(12px,3vw,15px); font-weight: 700; background: rgba(20,35,60,0.85); padding: 3px 12px; border-radius: 14px; border: 1px solid rgba(255,215,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; gap: 5px; transition: all 0.3s; }
 .hud-collect.done { border-color: rgba(76,175,80,0.6); background: rgba(30,60,40,0.85); }
 .hud-collect.bump { animation: collectBump 0.35s ease-out; }
@@ -304,6 +304,14 @@ body.cd-paused #pauseBlocker {
 .heart:not(.empty):nth-child(1) { animation-delay: 0s; }
 .heart:not(.empty):nth-child(2) { animation-delay: 0.1s; }
 .heart:not(.empty):nth-child(3) { animation-delay: 0.2s; }
+.hud-timer-bar { position: relative; width: clamp(90px,25vw,140px); height: 18px; background: rgba(20,35,60,0.85); border-radius: 9px; border: 1px solid rgba(78,205,196,0.25); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.hud-timer-fill { position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, rgba(78,205,196,0.5), rgba(78,205,196,0.3)); border-radius: 9px; transition: width 0.5s linear; }
+.hud-timer-fill.timer-warn { background: linear-gradient(90deg, rgba(255,183,77,0.5), rgba(255,183,77,0.3)); }
+.hud-timer-fill.timer-danger { background: linear-gradient(90deg, rgba(229,57,53,0.5), rgba(229,57,53,0.3)); }
+.hud-timer-text { position: relative; z-index: 1; font-size: clamp(10px,2.8vw,13px); font-weight: 700; color: #e0e8f0; font-variant-numeric: tabular-nums; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+.hud-timer-bar.timer-warn .hud-timer-text { color: #FFB74D; }
+.hud-timer-bar.timer-danger .hud-timer-text { color: #e53935; animation: timerPulse 0.5s ease-in-out infinite; }
+@keyframes timerPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 .hud-btn { width: clamp(32px,8vw,42px); height: clamp(32px,8vw,42px); border-radius: 50%; background: rgba(20,35,60,0.85); border: 1px solid rgba(78,205,196,0.2); color: #e0e8f0; font-size: clamp(14px,4vw,20px); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .hud-btn:hover { background: rgba(30,45,70,0.9); border-color: rgba(78,205,196,0.4); }
 .hud-btn:active { transform: scale(0.9); }
