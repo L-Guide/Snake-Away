@@ -207,6 +207,8 @@ const SnakeAudio = (function () {
   }
   function startMusic() {
     if (musicPlaying) return;
+    if (!musicOn || !enabled || !ytAudioGate) return;
+    if (ctx && ctx.state === 'suspended') ctx.resume();
     musicPlaying = true;
     musicStep = 0;
     scheduleMusic();
@@ -226,7 +228,11 @@ const SnakeAudio = (function () {
   }
   function setEnabled(v) { enabled = v; applyVol(); }
   function setMusic(v) { musicOn = v; applyVol(); }
-  function setYtGate(v) { ytAudioGate = v; applyVol(); }
+  function setYtGate(v) {
+    ytAudioGate = v;
+    if (v && ctx && ctx.state === 'suspended') ctx.resume();
+    applyVol();
+  }
   function applyVol() {
     if (!ctx) return;
     sfxGain.gain.value = enabled && ytAudioGate ? 0.35 : 0;
