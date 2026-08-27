@@ -2,7 +2,7 @@
 const SnakeAudio = (function () {
   let ctx = null;
   let master = null, sfxGain = null, musGain = null;
-  let enabled = true, musicOn = true, ytAudioGate = true;
+  let enabled = true, musicOn = false, ytAudioGate = true;
   let musicPlaying = false;
   let musicTimeout = null;
   let musicStep = 0;
