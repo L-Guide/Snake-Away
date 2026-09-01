@@ -514,3 +514,12 @@ body.cd-paused #pauseBlocker {
   .hud { top: clamp(14px,4vw,22px); padding-top: clamp(12px,3.5vw,18px); }
   .hud-center { gap: 5px; }
 }
+
+/* ===================== INLINE STYLE REPLACEMENTS ===================== */
+#win-level { color: #4ECDC4; }
+#win-score { color: #FFD700; font-size: 18px; font-weight: 700; }
+.win-box .info-btns { margin-top: 4px; }
+#scr-lose .info-title { color: #e53935; }
+#lose-level { color: #7a9ab8; }
+.info-btns-col { align-items: center; }
+.howto-content .info-btns { margin-top: 8px; }

@@ -34,22 +34,40 @@ const Game = (function () {
     { level: 20, key: 'gold', title: '✨ Golden Snakes', msg: 'Golden snakes shimmer for style — same rules apply, just extra satisfying to clear!' },
     { level: 35, key: 'chain', title: '🔒 Locked Snakes', msg: 'A locked snake (chain icon) can\'t be freed until the snake holding its key is cleared first.' },
   ];
+  function bindEvents() {
+    var b;
+    b = document.getElementById('btn-play-home'); if (b) b.addEventListener('click', function() { Game.btnLevels(); });
+    b = document.getElementById('btn-howto-home'); if (b) b.addEventListener('click', function() { Game.btnHowto(); });
+    b = document.getElementById('snd-btn'); if (b) b.addEventListener('click', function() { Game.toggleSound(); });
+    b = document.getElementById('mus-btn'); if (b) b.addEventListener('click', function() { Game.toggleMusic(); });
+    b = document.getElementById('sel-back-btn'); if (b) b.addEventListener('click', function() { Game.btnHome(); });
+    b = document.getElementById('btn-home-play'); if (b) b.addEventListener('click', function() { Game.btnHome(); });
+    b = document.getElementById('btn-restart'); if (b) b.addEventListener('click', function() { Game.btnRestart(); });
+    b = document.getElementById('undo-btn'); if (b) b.addEventListener('click', function() { Game.btnUndo(); });
+    b = document.getElementById('btn-free-hint'); if (b) b.addEventListener('click', function() { Game.btnRewatchHint(); });
+    b = document.getElementById('btn-howto-play'); if (b) b.addEventListener('click', function() { Game.btnHowto(); });
+    b = document.getElementById('btn-win-next'); if (b) b.addEventListener('click', function() { Game.btnNext(); });
+    b = document.getElementById('btn-win-replay'); if (b) b.addEventListener('click', function() { Game.btnReplay(); });
+    b = document.getElementById('btn-revive'); if (b) b.addEventListener('click', function() { Game.btnRewatchAd(); });
+    b = document.getElementById('btn-get-time'); if (b) b.addEventListener('click', function() { Game.btnGetTime(); });
+    b = document.getElementById('btn-lose-retry'); if (b) b.addEventListener('click', function() { Game.btnRetry(); });
+    b = document.getElementById('btn-lose-home'); if (b) b.addEventListener('click', function() { Game.btnHome(); });
+    b = document.getElementById('btn-complete-play'); if (b) b.addEventListener('click', function() { Game.btnPlayAgain(); });
+    b = document.getElementById('btn-complete-levels'); if (b) b.addEventListener('click', function() { Game.btnLevelsFromComplete(); });
+    b = document.getElementById('btn-complete-home'); if (b) b.addEventListener('click', function() { Game.btnHomeFromComplete(); });
+    b = document.getElementById('btn-howto-back'); if (b) b.addEventListener('click', function() { Game.btnHowtoBack(); });
+  }
+
   function init() {
     S.canvas = document.getElementById('gc');
     S.ctx = S.canvas.getContext('2d');
     S.ytMode = (typeof ytgame !== 'undefined') && !!ytgame && !!(ytgame.IN_PLAYABLES_ENV);
     loadProgress();
+    bindEvents();
     resize();
     window.addEventListener('resize', resize);
     document.addEventListener('pointerdown', onPointer);
     document.addEventListener('keydown', onKey);
-    if (!S.ytMode) {
-      document.addEventListener('visibilitychange', function () {
-        if (S.state !== 'play') return;
-        if (document.hidden) pauseGame();
-        else if (S.paused) resumeGame();
-      });
-    }
     if (S.ytMode) {
       try {
         ytgame.system.onPause(function () { platformPause(); });
@@ -75,9 +93,7 @@ const Game = (function () {
       requestAnimationFrame(function () {
         try { ytgame.game.firstFrameReady(); } catch (e) {}
         S.firstFrameSent = true;
-        setTimeout(function () {
-          try { ytgame.game.gameReady(); } catch (e) {}
-        }, 200);
+        try { ytgame.game.gameReady(); } catch (e) {}
       });
     }
   }
@@ -1930,3 +1946,4 @@ const Game = (function () {
     toggleSound: toggleSound, toggleMusic: toggleMusic,
   };
 })();
+document.addEventListener('DOMContentLoaded', function() { Game.init(); });

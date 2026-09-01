@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0a1628">
 <title>Snake Away!</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://www.youtube.com/game_api/v1" onerror="window.ytgame=null"></script>
+<script src="https://www.youtube.com/game_api/v1"></script>
 </head>
 <body>
 <div id="pauseBlocker"></div>
@@ -57,16 +57,16 @@
       </div>
     </div>
 
-    <button class="btn-play" onclick="Game.btnLevels()">
+    <button class="btn-play" id="btn-play-home">
       <span class="btn-play-glow"></span>
       <span class="btn-play-text" id="home-level">Level 1</span>
       <span class="btn-play-arrow">&#9654;</span>
     </button>
 
-    <button class="btn-howto" onclick="Game.btnHowto()">How to Play</button>
+    <button class="btn-howto" id="btn-howto-home">How to Play</button>
 
     <div class="home-audio-row">
-      <div class="audio-toggle" id="snd-btn" onclick="Game.toggleSound()">
+      <div class="audio-toggle" id="snd-btn">
         <div class="audio-toggle-track">
           <div class="audio-toggle-thumb"></div>
         </div>
@@ -79,7 +79,7 @@
         </div>
         <div class="audio-toggle-label">Sound</div>
       </div>
-      <div class="audio-toggle" id="mus-btn" onclick="Game.toggleMusic()">
+      <div class="audio-toggle" id="mus-btn">
         <div class="audio-toggle-track">
           <div class="audio-toggle-thumb"></div>
         </div>
@@ -99,7 +99,7 @@
 <div id="scr-select" class="screen">
   <div class="sel-header">Select Level</div>
   <div id="select-grid"></div>
-  <button class="sel-back-btn" onclick="Game.btnHome()">
+  <button class="sel-back-btn" id="sel-back-btn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
       <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/>
     </svg>
@@ -110,7 +110,7 @@
 <div id="scr-play" class="screen">
   <div class="hud">
     <div class="hud-left">
-      <button class="hud-btn" onclick="Game.btnHome()">
+      <button class="hud-btn" id="btn-home-play">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
           <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/>
         </svg>
@@ -129,15 +129,15 @@
     </div>
     <div class="hud-right">
       <div id="hud-hearts"><span class="heart">&#10084;</span><span class="heart">&#10084;</span><span class="heart">&#10084;</span></div>
-      <button class="hud-btn" onclick="Game.btnRestart()">&#10227;</button>
+      <button class="hud-btn" id="btn-restart">&#10227;</button>
     </div>
   </div>
   <div class="bottom-bar">
-    <button class="btn btn-secondary btn-small" id="undo-btn" onclick="Game.btnUndo()">&#8630; <span id="hud-undos">3</span></button>
-    <button class="btn-reward-inline" id="btn-free-hint" onclick="Game.btnRewatchHint()">
+    <button class="btn btn-secondary btn-small" id="undo-btn">&#8630; <span id="hud-undos">3</span></button>
+    <button class="btn-reward-inline" id="btn-free-hint">
       <span>&#127916;</span> Free Hint
     </button>
-    <button class="hud-btn" onclick="Game.btnHowto()">?</button>
+    <button class="hud-btn" id="btn-howto-play">?</button>
   </div>
 </div>
 
@@ -148,31 +148,31 @@
       <div class="win-trophy-glow"></div>
       <div class="win-trophy" id="win-trophy">&#127942;</div>
     </div>
-    <div class="info-title" id="win-level" style="color:#4ECDC4">Level Complete!</div>
+    <div class="info-title" id="win-level">Level Complete!</div>
     <div class="win-subtitle" id="win-subtitle">Amazing!</div>
     <div class="info-stars" id="win-stars"></div>
     <div class="win-collect-summary" id="win-collect-summary"></div>
-    <div id="win-score" style="color:#FFD700;font-size:18px;font-weight:700"></div>
-    <div class="info-btns" style="margin-top:4px">
-      <button class="btn btn-primary win-btn-next" onclick="Game.btnNext()">Next &#8594;</button>
-      <button class="btn btn-secondary win-btn-replay" onclick="Game.btnReplay()">Replay</button>
+    <div id="win-score"></div>
+    <div class="info-btns">
+      <button class="btn btn-primary win-btn-next" id="btn-win-next">Next &#8594;</button>
+      <button class="btn btn-secondary win-btn-replay" id="btn-win-replay">Replay</button>
     </div>
   </div>
 </div>
 
 <div id="scr-lose" class="screen info-overlay">
   <div class="info-box">
-    <div class="info-title" style="color:#e53935">Out of Hearts!</div>
-    <div id="lose-level" style="color:#7a9ab8">Level 1</div>
-    <button class="btn-reward" id="btn-revive" onclick="Game.btnRewatchAd()">
+    <div class="info-title">Out of Hearts!</div>
+    <div id="lose-level">Level 1</div>
+    <button class="btn-reward" id="btn-revive">
       <span>&#127916; Free Revive</span>
     </button>
-    <button class="btn-reward" id="btn-get-time" style="display:none" onclick="Game.btnGetTime()">
-      <span id="btn-get-time-text">⏱ Get +0s</span>
+    <button class="btn-reward" id="btn-get-time" style="display:none">
+      <span id="btn-get-time-text">&#9201; Get +0s</span>
     </button>
-    <div class="info-btns info-btns-col" style="align-items:center">
-      <button class="btn btn-primary" onclick="Game.btnRetry()">Try Again</button>
-      <button class="btn btn-secondary" onclick="Game.btnHome()">Home</button>
+    <div class="info-btns info-btns-col">
+      <button class="btn btn-primary" id="btn-lose-retry">Try Again</button>
+      <button class="btn btn-secondary" id="btn-lose-home">Home</button>
     </div>
   </div>
 </div>
@@ -194,15 +194,15 @@
       </div>
     </div>
     <div class="complete-buttons">
-      <button class="btn-complete-play" onclick="Game.btnPlayAgain()">
+      <button class="btn-complete-play" id="btn-complete-play">
         <span class="complete-btn-icon">&#128260;</span>
         <span>Play Again</span>
       </button>
-      <button class="btn-complete-levels" onclick="Game.btnLevelsFromComplete()">
+      <button class="btn-complete-levels" id="btn-complete-levels">
         <span class="complete-btn-icon">&#128203;</span>
         <span>All Levels</span>
       </button>
-      <button class="btn-complete-home" onclick="Game.btnHomeFromComplete()">
+      <button class="btn-complete-home" id="btn-complete-home">
         <span class="complete-btn-icon">&#127968;</span>
         <span>Home</span>
       </button>
@@ -253,8 +253,8 @@
       <div class="rule-icon">&#127942;</div>
       <p>Clear every snake to complete the level. Fewer mistakes earn more stars — up to 3 per level!</p>
     </div>
-    <div class="info-btns" style="justify-content:center;margin-top:8px">
-      <button class="btn btn-primary" onclick="Game.btnHowtoBack()">Got it!</button>
+    <div class="info-btns">
+      <button class="btn btn-primary" id="btn-howto-back">Got it!</button>
     </div>
   </div>
 </div>
@@ -262,8 +262,5 @@
 <script src="core.js"></script>
 <script src="audio.js"></script>
 <script src="main.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() { Game.init(); });
-</script>
 </body>
 </html>
